@@ -1,11 +1,12 @@
 Package: IAfrac
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Tools for weighted log-rank tests
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
-Encoding: UTF-8
-LazyData: true
+Date: 2019-08-12
+Author: Lili Wang
+Maintainer: The package maintainer <lilywang@umich.edu>
+Depends: data.table
+Description: Sample size calculation and information fraction estimation for weighted log-rank tests
+License:  GPL-2
+
+
