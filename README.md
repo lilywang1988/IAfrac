@@ -28,14 +28,14 @@ c \\exp(-\\theta\\lambda t)& for \\ t&gt; \\epsilon.
 
 Note that
 *c* = exp(−(1 − *θ*)*λ**ϵ*)
-, and the corresponding density functions are
+ The corresponding density functions are
 
 $$\\begin{array}{cc}
  f\_0(t)= \\lambda\\exp(-\\lambda t),   
 & 
 f\_1(t)=\\left\\{\\begin{array}{c l}
-\\lambda\\exp(-\\lambda t)=\\lambda S\_1(t) &for \\ t\\leq \\epsilon;\\\\
-\\theta\\lambda c\\exp(-\\theta\\lambda t)=\\theta\\lambda S\_1(t)& for \\ t&gt; \\epsilon}. 
+\\lambda\\exp(-\\lambda t)=\\lambda S\_1(t) &for \\ t\\leq \\tilde{t};\\\\
+\\theta\\lambda c\\exp(-\\theta\\lambda t)=\\theta\\lambda S\_1(t)& for \\ t&gt; \\tilde{t}. 
 \\end{array}  \\right.
 \\end{array}$$
 
