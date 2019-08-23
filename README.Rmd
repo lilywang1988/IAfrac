@@ -15,9 +15,9 @@ knitr::opts_chunk$set(collapse = TRUE,
 
 ## Purpose
 
-This R package is to implement important works from Dr. Hasegawa (2014 and 2016) for Fleming-Harrington class weighted log-rank tests (FH-WLRT) sample size calculation and the information fraction monitoring for interim analysis (IA).  
+This R package is to implement important contributions from Dr. Hasegawa (2014 and 2016) to calculate sample sizes and information fractions (IF) for Fleming-Harrington class weighted log-rank tests (FH-WLRT) in interim analysis (IA).
 
-This R package will be improved and upgraded in the near future. 
+This R package will be improved gradually and we hope to release it to CRAN eventually when it is well established. Please let us know if you find anything to be corrected. We highly appreciate your feedback. 
 
 
 ## Install the package
@@ -39,19 +39,19 @@ library(IAfrac)
 ```{r vignette1}
 # Sample size calculation using an Example 1 from Hasegawa (2014)
  p<-2/3
-  tau<-66
-  omega<-18
-  eps<-6
-  m1=21.7  #median survival time for placebo group
-  m2=25.8  # median survival time for treatment group
-  lambda<-log(2)/m1
-  lambda.trt<-log(2)*(m1-eps)/(m2-eps)/m1
-  theta=lambda.trt/lambda
-  alpha<-0.025
-  beta<-0.1
-  rho=0
-  gamma=1
-  b=30
+  tau<-66 # The end of the study
+  omega<-18 # tau-R, and R is the end of the arrual time, thus omega is can be viewed as the time between the end of the study and the last accrual. 
+  eps<-6 # The change point, where under the H0, the HR between the treatment and the control group changes from 1 to theta
+  m1=21.7  # median survival time for the control group
+  m2=25.8  # median survival time for the treatment group
+  lambda<-log(2)/m1 # hazard for the concontrol group and the treatment group before eps, the change point. 
+  lambda.trt<-log(2)*(m1-eps)/(m2-eps)/m1 # hazaed for the treatment group after eps, the change point. 
+  theta=lambda.trt/lambda # the hazard ratio after the change point
+  alpha<-0.025 # the type I error under control, which is one-sided here
+  beta<-0.1 # the type II error under control
+  rho=0 # the first parameter for the Fleming-Harrington weight: S(t^-)^\rho (1-S(t^-))^\gamma. 
+  gamma=1 # the second parameter for the Fleming-Harrington weight: S(t^-)^\rho (1-S(t^-))^\gamma. 
+  b=30 # an intrinsic parameter to decide the number of intervals per time unit
   sample.size_FH(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,beta)$n
  #1974, identical to the paper's report
 ```
@@ -73,7 +73,7 @@ p<-0.5 #treatment assignment
 b<-30 # an intrinsic parameter to decide the number of intervals per time unit
 tau<- 18 # end of the study
 R<-14 # accrual period [0,R]
-omega<- tau-R
+omega<- tau-R # tau-R, and R is the end of the arrual time, thus omega is can be viewed as the time between the end of the study and the last accrual. 
 lambda<-log(2)/6 # control group risk hazard
 theta<-0.7 # hazard ratio
 lambda.trt<- lambda*theta #hazard after the change point for the treatment arm
@@ -83,10 +83,12 @@ alpha<-0.025 #type 1 error
 beta<-0.1 #type 2 error
 # First we decide the sample size:
 size_FH <- sample.size_FH(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,beta)
-n_FH <-size_FH$n
-n_event_FH<-size_FH$n_event
+n_FH <-size_FH$n # number of patients needed
+n_event_FH<-size_FH$n_event # number of events needed, n_event_FH~n_FH*size_FH$sum_D
 accrual.rt<-n_FH/R # the needed arrual rate
-#Generate data accordingly, use eta=1e-5 to inhibit censoring
+#Generate data accordingly
+
+# use eta=1e-5 to inhibit censoring when generating the data
 data_temp <- nphsim(nsim=1,lambdaC=lambda, lambdaE = c(lambda,lambda.trt), ssC=ceiling(n_FH*(1-p)),intervals = c(eps),ssE=ceiling(n_FH*p), gamma=accrual.rt, R=R, eta=1e-5, fixEnrollTime = TRUE)$simd
 # First  under H1 obtain the maximum information at time tau, the end of the study
 I_denom1<-I.1(rho, gamma,lambda,theta,eps,R,p,t.star=tau)*n_FH
@@ -95,6 +97,7 @@ I_denom1<-I.1(rho, gamma,lambda,theta,eps,R,p,t.star=tau)*n_FH
 I_denom0<-I.0(rho, gamma,lambda,R,p,t.star=tau)*n_FH
 
 # Example 1: Set trimmed=F and work on the crude dataset from nphsim()
+# Pick 3 time points, 10, 15, 18 to check their information fractions under the two hypothesis
 inf_frac_vec11<-FH.frac.cal(data_temp,c(10,15,18),I_denom1,rho,gamma,trimmed=F)
 inf_frac_vec11
 
@@ -102,7 +105,7 @@ inf_frac_vec10<-FH.frac.cal(data_temp,c(10,15,18),I_denom0,rho,gamma,trimmed=F)
 inf_frac_vec10
 
 # Example 2: First trim the data before inputting into FH.frac.cal() setting trimmed=T, and obtain the whole spectrum.
-tau.star=21 #in case the ratio=1 when t>tau
+tau.star=21 # set a pseudo ending point in case IF=1 when t>tau
 #Trim the data according by time tau.star
 data_temp2 <-data.trim(tau.star,data_temp)
 t_seq <- seq(0.1,tau.star,0.1) # the time series to check the information fraction
@@ -113,22 +116,22 @@ inf_frac_vec20<-FH.frac.cal(data_temp2,t_seq,I_denom0,rho,gamma,trimmed=T)
 # WLRT at the interim under H1
 interim_index1<- which.min(abs(inf_frac_vec21-0.6))
 (interim_time1<-t_seq[interim_index1])
-(interim_frac1<-inf_frac_vec21[interim_index1])
+(interim_frac1<-inf_frac_vec21[interim_index1]) # should be close to 0.6
 # WLRT at the interim under H0
-interim_index0<- which.min(abs(inf_frac_vec21-0.6))
+interim_index0<- which.min(abs(inf_frac_vec20-0.6))
 (interim_time0<-t_seq[interim_index0])
-(interim_frac0<-inf_frac_vec20[interim_index0])
+(interim_frac0<-inf_frac_vec20[interim_index0]) # should be close to 0.6
 # WLRT at the final stage under H1
-final_index1<- which.min(abs(inf_frac_vec21-1))
+final_index1<- which.min(abs(inf_frac_vec21-1)) 
 (final_time1<-t_seq[final_index1])
-(final_frac1<-inf_frac_vec21[final_index1])
+(final_frac1<-inf_frac_vec21[final_index1])  # should be close to 1
 
 # WLRT at the final stage under H0
 final_index0<- which.min(abs(inf_frac_vec20-1))
 (final_time0<-t_seq[final_index0])
-(final_frac0<-inf_frac_vec20[final_index0])
+(final_frac0<-inf_frac_vec20[final_index0])  # should be close to 1
 
-# Example 3: Stop by event count d
+# Example 3: Stop by event count d, note that data.trim.d returns a list of two components, the first is the dataset, the second is the stopping time
 data_temp3.ls<-data.trim.d(d=200,data_temp)
 data_temp3<-data_temp3.ls[[1]]
 (interim_time_d<-data_temp3.ls[[2]]) # the interim time with d observed events
@@ -147,7 +150,7 @@ p<-0.5 #treatment assignment
 b<-30 # an intrinsic parameter to decide the number of intervals per time unit
 tau<- 18 # end of the study
 R<-14 # accrual period [0,R]
-omega<- tau-R
+omega<- tau-R # tau-R, and R is the end of the arrual time, thus omega is can be viewed as the time between the end of the study and the last accrual. 
 lambda<-log(2)/6 # control group risk hazard
 theta<-0.7 # hazard ratio
 lambda.trt<- lambda*theta #hazard after the change point for the treatment arm
@@ -157,27 +160,40 @@ alpha<-0.025 #type 1 error
 beta<-0.1 #type 2 error
 # First we decide the sample size:
 size_FH <- sample.size_FH(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,beta)
-n_FH <-size_FH$n
-n_event_FH<-size_FH$n_event
+n_FH <-size_FH$n # number of patients needed
+n_event_FH<-size_FH$n_event # number of events needed, n_event_FH~n_FH*size_FH$sum_D
 accrual.rt<-n_FH/R # the needed arrual rate
-#Generate data under H1, use eta=1e-5 to inhibit censoring
+#Generate data accordingly
+
+# use eta=1e-5 to inhibit censoring when generating the data
 data_temp <- nphsim(nsim=1,lambdaC=lambda, lambdaE = c(lambda,lambda.trt), ssC=ceiling(n_FH*(1-p)),intervals = c(eps),ssE=ceiling(n_FH*p),gamma=accrual.rt, R=R, eta=1e-5, fixEnrollTime = TRUE)$simd
 
 #Obtain the full information at the final stage based on the generated data
-#Trim the data upto the final stage when n_event_FH events have been observed
+#Trim the data up to the final stage when n_event_FH events have been observed
 data_temp1.ls <-data.trim.d(n_event_FH,data_temp)
 data_temp1 <-data_temp1.ls[[1]]
-I_t(data_temp1,data_temp1,rho,gamma) # the estimated information at the final stage
-I.1(rho,gamma,lambda,theta,eps,R,p,data_temp1.ls[[2]])*n_FH # predicted information
+I_t(data_temp1,data_temp1,rho,gamma) # the estimated information of data_Temp1 at the final stage using data_temp1 to obtain the survival function estimates
+(data_temp1_t<-data_temp1.ls[[2]]) # the true stopping time based on the data data_temp1
+
+# Now if we would like to predict the stopping time
+t_ls<-seq(0.1,25,0.1)
+(pred_t1<-t_ls[which.min(abs(size_FH$sum_D-sapply(t_ls,function(t) {h.tilde(0,lambda,theta,eps,R,p,t)})))]) #predicted data_temp1_t, they should be similar
+
+I.1(rho,gamma,lambda,theta,eps,R,p,pred_t1)*n_FH # predicted information, should be close to I_t(data_temp1,data_temp1,rho,gamma) above.
 
 #Generate data under H0, use eta=1e-5 to inhibit censoring
-data_temp2 <- nphsim(nsim=1,lambdaC=lambda, lambdaE = c(lambda,lambda), ssC=ceiling(n_FH*(1-p)),intervals = c(eps),ssE=ceiling(n_FH*p),gamma=accrual.rt, R=R, eta=1e-5, fixEnrollTime = TRUE)$simd
+data_temp0 <- nphsim(nsim=1,lambdaC=lambda, lambdaE = c(lambda,lambda), ssC=ceiling(n_FH*(1-p)),intervals = c(eps),ssE=ceiling(n_FH*p),gamma=accrual.rt, R=R, eta=1e-5, fixEnrollTime = TRUE)$simd
 
 #Trim the data upto the final stage when n_event_FH events have been observed
-data_temp2.ls <-data.trim.d(n_event_FH,data_temp2)
-data_temp2 <-data_temp2.ls[[1]]
-I_t(data_temp2,data_temp2,rho,gamma) # estimated information at the final stage
-I.0(rho,gamma,lambda,R,p,data_temp2.ls[[2]])*n_FH # predicted information
+data_temp0.ls <-data.trim.d(n_event_FH,data_temp0)
+data_temp0 <-data_temp0.ls[[1]]
+I_t(data_temp0,data_temp0,rho,gamma) # estimated information at the final stage
+(data_temp0_t<-data_temp0.ls[[2]]) # the true stopping time based on the data data_temp1
+
+# Now if we would like to predict the stopping time
+t_ls<-seq(0.1,25,0.1)
+(pred_t0<-t_ls[which.min(abs(size_FH$sum_D-sapply(t_ls,function(t) {h.tilde(0,lambda,1,eps,R,p,t)})))]) #predicted data_temp1_t, they should be similar
+I.0(rho,gamma,lambda,R,p,pred_t0)*n_FH # predicted information, should be close to I_t(data_temp0,data_temp0,rho,gamma) above
 
 ```
 
