@@ -36,9 +36,7 @@ c \exp(-\theta\lambda t)& for \ t> \epsilon.
 \end{array}  \right.
 \end{array}$$
 
-Note that 
-
-$$c=\exp(-(1-\theta)\lambda\times\epsilon)$$
+Note that $$c=\exp(-(1-\theta)\lambda\times\epsilon)$$
 
 
 
