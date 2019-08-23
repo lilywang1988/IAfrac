@@ -17,30 +17,27 @@ Let the survival function is *S*<sub>0</sub>(*t*) for both treatment arms (treat
 
 We consider a simple case in current version of the R package, with a delayed (*ϵ*) treatment effect and can be described with a piece-wise exponential distribution is proposed.
 
-$$
-\\begin{array}{cc}
+$$\\begin{array}{cc}
  S\_0(t)= \\exp(-\\lambda t),   
 & 
 S\_1(t)=\\left\\{\\begin{array}{c l}
 exp(-\\lambda t) &for \\ t\\leq \\epsilon;\\\\
 c \\exp(-\\theta\\lambda t)& for \\ t&gt; \\epsilon. 
 \\end{array}  \\right.
-\\end{array}
-$$
- Note that
+\\end{array}$$
+
+Note that
 *c* = exp(−(1 − *θ*)*λ**ϵ*)
 , and the corresponding density functions are
 
-$$
-\\begin{array}{cc}
+$$\\begin{array}{cc}
  f\_0(t)= \\lambda\\exp(-\\lambda t),   
 & 
 f\_1(t)=\\left\\{\\begin{array}{c l}
 \\lambda\\exp(-\\lambda t)=\\lambda S\_1(t) &for \\ t\\leq \\epsilon;\\\\
 \\theta\\lambda c\\exp(-\\theta\\lambda t)=\\theta\\lambda S\_1(t)& for \\ t&gt; \\epsilon}. 
 \\end{array}  \\right.
-\\end{array}
-$$
+\\end{array}$$
 
 Install the package
 -------------------

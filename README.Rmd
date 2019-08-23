@@ -27,28 +27,26 @@ Let the  survival function is $S_0(t)$ for both treatment arms (treatment and co
 We consider a simple case in current version of the R package, with a delayed ($\epsilon$) treatment effect and can be described with a piece-wise exponential distribution is proposed.
 
 
-$$
-\begin{array}{cc}
+$$\begin{array}{cc}
  S_0(t)= \exp(-\lambda t),   
 & 
 S_1(t)=\left\{\begin{array}{c l}
 exp(-\lambda t) &for \ t\leq \epsilon;\\
 c \exp(-\theta\lambda t)& for \ t> \epsilon. 
 \end{array}  \right.
-\end{array}
-$$
+\end{array}$$
+
 Note that $$c=\exp(-(1-\theta)\lambda\epsilon)$$, and the corresponding density functions are
 
-$$
-\begin{array}{cc}
+$$\begin{array}{cc}
  f_0(t)= \lambda\exp(-\lambda t),   
 & 
 f_1(t)=\left\{\begin{array}{c l}
 \lambda\exp(-\lambda t)=\lambda S_1(t) &for \ t\leq \epsilon;\\
 \theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \epsilon}. 
 \end{array}  \right.
-\end{array}
-$$
+\end{array}$$
+
 
 
 
