@@ -46,8 +46,8 @@ $$\begin{array}{cc}
  f_0(t)= \lambda\exp(-\lambda t),   
 & 
 f_1(t)=\left\{\begin{array}{c l}
-\lambda\exp(-\lambda t)=\lambda S_1(t) &for \ t\leq \tilde{t};\\
-\theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \tilde{t}.
+\lambda\exp(-\lambda t)=\lambda S_1(t) &for \ t\leq \epsilon;\\
+\theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \epsilon.
 \end{array}  \right.
 \end{array}$$
 
