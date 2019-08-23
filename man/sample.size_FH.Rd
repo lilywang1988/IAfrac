@@ -46,7 +46,7 @@ Type II error
 }
 }
 \details{
-This is to implement the
+This function is to calculate the sample size for Fleming-Harrington weighted log-rank tests with piece-wise exponential distributed survival curves in described in Hasegawa(2014).
 }
 \value{
 \item{n}{The needed sample size.}
@@ -58,20 +58,17 @@ This is to implement the
 Ye, T., & Yu, M. (2018). A robust approach to sample size calculation in cancer immunotherapy trials with delayed treatment effect. Biometrics, 74(4), 1292-1300.
 
 Hasegawa, T. (2014). Sample size determination for the weighted log‐rank test with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 13(2), 128-135.
-
+}
 \author{
 Lili Wang, Ting Ye
 }
+
 \note{
 This function is based on a R function from Dr. Ting Ye's paper:
 Ye, T., & Yu, M. (2018). A robust approach to sample size calculation in cancer immunotherapy trials with delayed treatment effect. Biometrics, 74(4), 1292-1300.
 }
 
 %% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 # Example 1 from Hasegawa (2014)
 

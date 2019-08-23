@@ -5,7 +5,7 @@
 Calcualte the average hazard ratios
 }
 \description{
-Calculate the average hazard ratios according to Kalbfleisch and Prentice (1981) or in the paper Hasegawa (2014) for piece-wise exponential survival functions (only one change point \code{t.tilde}).
+Calculate the average hazard ratios according to Kalbfleisch and Prentice (1981) or in the paper Hasegawa (2014) for piece-wise exponential survival functions (only one change point \code{eps}).
 }
 \usage{
 avg.haz(theta, eps, lambda, p = 1/2)
@@ -30,6 +30,7 @@ This is to estimate the average hazard ratios when there exist non-proportional 
  \deqn{AHR(x) = \frac{\frac{1}{2p}(1-e^{-2p\lambda\epsilon})+\frac{\theta}{p(1+theta)}e^{-\lambda\epsilon(1+p-\theta(1-p))}}{\frac{1}{2p}(1-e^{-2p\lambda\epsilon})+\frac{1}{p(1+theta)}e^{-\lambda\epsilon(1+p-\theta(1-p))}}}{%
  [1/2/p*(1-exp(-2*p*lambda*eps))+theta/p/(1+theta)*exp(-lambda*eps*(1+p-theta*(1-p)))]/[1/2/p*(1-exp(-2*p*lambda*eps))+1/p/(1+theta)*exp(-lambda*eps*(1+p-theta*(1-p)))]
   }
+}
 \value{
 %%  ~Describe the value returned
 %%  If it is a LIST, use
@@ -55,6 +56,7 @@ Lili Wang
 \seealso{
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
+
 \examples{
 # test
 lambda=log(2)/6
