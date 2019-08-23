@@ -37,7 +37,7 @@ c \exp(-\theta\lambda t)& for \ t> \epsilon.
 \end{array}$$
 
 Note that 
-$$c=\exp(-(1-\theta)\lambda\epsilon)$$
+$$c=\exp(-(1-\theta) \lambda \epsilon)$$
 The corresponding density functions are
 
 $$\begin{array}{cc}
