@@ -37,7 +37,11 @@ c \exp(-\theta\lambda t)& for \ t> \epsilon.
 \end{array}$$
 
 Note that 
-$$c=\exp(-(1-\theta) \lambda \epsilon)$$
+
+$$c=\exp(-(1-\theta)\lambda\times\epsilon)$$
+
+
+
 The corresponding density functions are
 
 $$\begin{array}{cc}
@@ -45,7 +49,7 @@ $$\begin{array}{cc}
 & 
 f_1(t)=\left\{\begin{array}{c l}
 \lambda\exp(-\lambda t)=\lambda S_1(t) &for \ t\leq \tilde{t};\\
-\theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \tilde{t}. 
+\theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \tilde{t}.
 \end{array}  \right.
 \end{array}$$
 
