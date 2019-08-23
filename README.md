@@ -10,6 +10,36 @@ This R package is to implement important contributions from Dr. Hasegawa (2014 a
 
 This R package will be improved gradually and we hope to release it to CRAN eventually when it is well established. Please let us know if you find anything to be corrected. We highly appreciate your feedback.
 
+Model assumptions
+-----------------
+
+Let the survival function is *S*<sub>0</sub>(*t*) for both treatment arms (treatment and control) under the null, but *S*<sub>1</sub>(*t*) for the treatment in comparison with *S*<sub>0</sub>(*t*) for the control arm under the alternative.
+
+We consider a simple case in current version of the R package, with a delayed (*ϵ*) treatment effect and can be described with a piece-wise exponential distribution is proposed.
+
+$$
+\\begin{array}{cc}
+ S\_0(t)= \\exp(-\\lambda t),   
+& 
+S\_1(t)=\\left\\{\\begin{array}{c l}
+exp(-\\lambda t) &for \\ t\\leq \\epsilon;\\\\
+c \\exp(-\\theta\\lambda t)& for \\ t&gt; \\epsilon. 
+\\end{array}  \\right.
+\\end{array}
+$$
+ Note that *c* = exp(−(1 − *θ*)*λ**ϵ*), and the corresponding density functions are
+
+$$
+\\begin{array}{cc}
+ f\_0(t)= \\lambda\\exp(-\\lambda t),   
+& 
+f\_1(t)=\\left\\{\\begin{array}{c l}
+\\lambda\\exp(-\\lambda t)=\\lambda S\_1(t) &for \\ t\\leq \\epsilon;\\\\
+\\theta\\lambda c\\exp(-\\theta\\lambda t)=\\theta\\lambda S\_1(t)& for \\ t&gt; \\epsilon}. 
+\\end{array}  \\right.
+\\end{array}
+$$
+
 Install the package
 -------------------
 
