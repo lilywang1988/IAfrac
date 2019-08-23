@@ -351,7 +351,7 @@ surv<-survKM_minus(v=LRT.table$survival,survival=data_ref$survival,delta=data_re
 #' tau.star=21 #in case the ratio=1 when t>tau
 #' #Trim the data
 #' data_temp2 <-data.trim(tau.star,data_temp)
-#' t_seq <- seq(0.1,tau_star,0.1) # the time series to check the information fraction
+#' t_seq <- seq(0.1,tau.star,0.1) # the time series to check the information fraction
 #' inf_frac_vec2<-FH.frac.cal(data_temp2,t_seq,I_denom,rho,gamma,trimmed=T)
 #' # WLRT at the interim
 #' interim_index<- which.min(abs(inf_frac_vec2-0.6))
