@@ -27,7 +27,9 @@ c \\exp(-\\theta\\lambda t)& for \\ t&gt; \\epsilon.
 \\end{array}  \\right.
 \\end{array}
 $$
- Note that *c* = exp(−(1 − *θ*)*λ**ϵ*), and the corresponding density functions are
+ Note that
+*c* = exp(−(1 − *θ*)*λ**ϵ*)
+, and the corresponding density functions are
 
 $$
 \\begin{array}{cc}
