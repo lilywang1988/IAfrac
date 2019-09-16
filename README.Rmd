@@ -239,13 +239,14 @@ I.0(rho,gamma,lambda,R,p,pred_t0)*n_FH # predicted information, should be close 
 
 
 ## References
+1. Lakatos, E. (1988). Sample sizes based on the log-rank statistic in complex clinical trials. Biometrics, 229-241.
 
-1. Kalbfleisch, J. D., & Prentice, R. L. (2011). The statistical analysis of failure time data (Vol. 360). John Wiley & Sons.
+2. Kalbfleisch, J. D., & Prentice, R. L. (2011). The statistical analysis of failure time data (Vol. 360). John Wiley & Sons.
 
-2. Hasegawa, T. (2014). Sample size determination for the weighted log‐rank test with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 13(2), 128-135.
+3. Hasegawa, T. (2014). Sample size determination for the weighted log‐rank test with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 13(2), 128-135.
 
-3. Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
+4. Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
 
-4. Ye, T., & Yu, M. (2018). A robust approach to sample size calculation in cancer immunotherapy trials with delayed treatment effect. Biometrics, 74(4), 1292-1300.
+5. Ye, T., & Yu, M. (2018). A robust approach to sample size calculation in cancer immunotherapy trials with delayed treatment effect. Biometrics, 74(4), 1292-1300.
 
-5. Luo, X., Mao, X., Chen, X., Qiu, J., Bai, S., & Quan, H. (2019). Design and monitoring of survival trials in complex scenarios. Statistics in medicine, 38(2), 192-209.
+6. Luo, X., Mao, X., Chen, X., Qiu, J., Bai, S., & Quan, H. (2019). Design and monitoring of survival trials in complex scenarios. Statistics in medicine, 38(2), 192-209.
