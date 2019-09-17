@@ -530,3 +530,7 @@ approx.I<-function(t.star,p,S1=function(x){1},S0=function(x){1},func=function(x)
   }
   out*p*(1-p)
 }
+
+
+
+

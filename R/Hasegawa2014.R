@@ -34,7 +34,7 @@ sample.size_FH<-function(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,be
   E.star<-E.star_num/E.star_den
   n<-(z.alpha+z.beta)^2/E.star^2
   n_event<-sum(D)*n
-  return(list(n=ceiling(ceiling(n*p)/p), n_event= ceiling(ceiling(n_event*p)/p),E.star=E.star,sum_D=sum(D),den_vec=den_vec[1:n_sub],num_vec=num_vec[1:n_sub],time_vec=seq(1,n_sub)/b))
+  return(list(n=ceiling(ceiling(n*p)/p), n_event= ceiling(ceiling(n_event*p)/p),E.star=E.star,sum_D=sum(D[1:n_sub]),D=D[1:n_sub],den_vec=den_vec[1:n_sub],num_vec=num_vec[1:n_sub],time_vec=seq(1,n_sub)/b))
 }
 if(F){
   # Example 1 in the paper Hasegawa(2014)
@@ -57,6 +57,7 @@ if(F){
   b=30
   res=sample.size_FH(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,beta)
   length(res$den_vec)
+  length(res$D)
 }
 
 
