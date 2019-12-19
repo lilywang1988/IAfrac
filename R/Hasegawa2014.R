@@ -8,7 +8,7 @@ sample.size_FH<-function(eps,p,b,tau,omega,lambda,lambda.trt,rho, gamma,alpha,be
   n_sub<-floor(b*tau)
   t<-c(0,seq(1,n_sub)/b)
   h_1<-rep(lambda,(n_sub+1)) #control
-  h_2<-c(rep(lambda,(eps*b)),rep(lambda.trt,n_sub-eps*b+1)) #treatment
+  h_2<-c(rep(lambda,round(eps*b)),rep(lambda.trt,n_sub-round(eps*b)+1)) #treatment
   N_1<-rep((1-p),(n_sub+1))
   N_2<-rep(p,(n_sub+1))
   for(i in 1:(n_sub-1)){
