@@ -5,18 +5,18 @@
 #library(data.table) #imports >= 1.12.2
 ### The below setting is prepared for direct debugging on the R file.
 if(F){
-  tau=18 # end of the study
-  R=14  # end  of the uniform enrollment period
-  lambda=log(2)/6 # event hazard for the control arm
-  k=2 # how many stages including the final stage
-  eps=2 # the change point
-  #eps=seq(0,20,0.1)
-  theta=0.7 #the hazard ratio after the change point (before the change point HR should be 1)
-  p=0.5 #the treatment assignment probability
-  k1=1 # parameter for basic functions
-  k2=2 # parameter for basic functions
-  rho=0 # FH parameter 1
-  gamma=1 # FH paramete 2
+  tau <- 18 # end of the study
+  R <- 14  # end  of the uniform enrollment period
+  lambda <- log(2) / 6 # event hazard for the control arm
+  k <- 2 # how many stages including the final stage
+  eps <- 2 # the change point
+  #eps <- seq(0,20,0.1)
+  theta <- 0.7 #the hazard ratio after the change point (before the change point HR should be 1)
+  p <- 0.5 #the treatment assignment probability
+  k1 <- 1 # parameter for basic functions
+  k2 <- 2 # parameter for basic functions
+  rho <- 0 # FH parameter 1
+  gamma <- 1 # FH paramete 2
 }
 
 
@@ -39,38 +39,60 @@ if(F){
 #' @return \code{getc} returns the \eqn{\exp(-\lambda*\epsilon*(1-\theta))} which is a multiplier for the survival and hazard of the treatment arm after the change point \code{eps}.
 #'
 ## Basic functions which are derived in the derivation document for piece-wice exponential distributed survival curves.
-getc<-function(theta,lambda,eps){exp(-(1-theta)*lambda*eps)}
+getc <- function(theta, lambda, eps){
+  exp( - (1 - theta) * lambda * eps)
+  }
 # Note that if e=tau, it is identical to 1/k+1/(k^2)/lamb/R*exp(-k*lamb*tau)*(1-exp(k*lamb*R))
 #' @rdname getc
-uv<-function(e,k,lambda,R,t.star){
-  ifelse(e>(t.star-R),u(e,k,lambda,R,t.star),v(e,k,lambda) )
+uv <- function(e, k, lambda, R, t.star){
+  ifelse(
+    e > (t.star - R),
+    u(e, k, lambda, R, t.star),
+    v(e, k, lambda)
+    )
 }
 #' @rdname getc
-v<-function(e,k,lambda){
-  1/k*(1-exp(-k*lambda*e))
+v <- function(e, k, lambda){
+  1 / k * (1 - exp( - k * lambda * e))
 }
 #' @rdname getc
-u<-function(e,k,lambda,R,t.star){
-  1/k*(1-exp(-k*lambda*max(t.star-R,0)))+1/k*min(1,t.star/R)*exp(-k*lambda*max(t.star-R,0))-
-    1/k*max(t.star-e,0)/R*exp(-k*lambda*min(e,t.star))+
-    1/k^2/R/lambda*(exp(-k*lambda*min(e,t.star))-exp(-k*lambda*max(t.star-R,0)))
+u <- function(e, k, lambda, R, t.star){
+  1 / k * (1 - exp( - k * lambda * max(t.star - R, 0))) + 
+    1 / k * min(1, t.star / R) * exp( - k * lambda * max(t.star - R, 0))-
+    1 / k * max(t.star - e, 0) / R * exp( - k * lambda * min(e, t.star))+
+    1 / k^2 / R / lambda * (exp( - k * lambda * min(e, t.star)) - 
+                              exp( - k * lambda * max(t.star - R, 0))
+                            )
 }
 #' @rdname getc
-h1<-function(k1,k2,lambda,theta,eps,R,t.star){
-  uv(eps,k1+k2+1,lambda,R,t.star)+getc(theta,lambda,eps)^(k1+1)*theta*(u(t.star,theta*(k1+1)+k2,lambda,R,t.star)-uv(eps,theta*(k1+1)+k2,lambda,R,t.star))
+h1 <- function(k1, k2, lambda, theta, eps, R, t.star){
+  uv(eps, k1 + k2 + 1, lambda, R, t.star) + 
+    getc(theta, lambda, eps)^(k1 + 1) * theta *(
+      u(t.star, theta * (k1 + 1) + k2,lambda,R,t.star) - 
+        uv(eps,theta*(k1+1)+k2,lambda,R,t.star)
+      )
 }
 #' @rdname getc
-h0<-function(k1,k2,lambda,theta,eps,R,t.star){
-  uv(eps,k1+k2+1,lambda,R,t.star)+getc(theta,lambda,eps)^k1*(u(t.star,theta*k1+k2+1,lambda,R,t.star)-uv(eps,k1*theta+k2+1,lambda,R,t.star))
+h0 <- function(k1, k2, lambda, theta, eps, R, t.star){
+  uv(eps,k1 + k2 + 1, lambda, R, t.star) + 
+    getc(theta, lambda, eps)^k1 * (
+      u(t.star,theta * k1 + k2 + 1, lambda, R, t.star) - 
+        uv(eps, k1 * theta + k2 + 1, lambda, R, t.star)
+      )
 }
 
 # under H1
 # h.tilde is introduced for the convenient calculation of the information under H1
 #' @rdname getc
-h.tilde<-function(m,lambda,theta,eps,R,p,t.star){
-  out<-0
+h.tilde <- function(m, lambda, theta, eps, R, p, t.star){
+  out <- 0
   for(i in 0:m){
-    out=out+factorial(m)/factorial(i)/factorial(m-i)*(p^(i+1)*(1-p)^(m-i)*h1(i,m-i,lambda,theta,eps,R,t.star)+p^i*(1-p)^(m-i+1)*h0(i,m-i,lambda,theta,eps,R,t.star))
+    out = out + factorial(m) / factorial(i) / factorial(m-  i) * 
+      (
+        p^(i + 1) * (1 - p)^(m - i) * 
+          h1(i, m - i, lambda, theta, eps, R, t.star) + 
+        p^i * (1 - p)^(m - i + 1) * h0(i, m - i, lambda, theta, eps, R, t.star)
+       )
     #print(factorial(m)/factorial(i)/factorial(m-i))
   }
   return(out)
@@ -95,40 +117,53 @@ h.tilde<-function(m,lambda,theta,eps,R,p,t.star){
 #' @references
 #' Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
 #'
-I.0<-function(rho,gamma,lambda,R,p,t.star){
-  if(rho==0 & gamma==0){
-    u(t.star,1,lambda,R,t.star)*p*(1-p)
-  }else if (rho==1 & gamma==0){
-    u(t.star,3,lambda,R,t.star)*p*(1-p)
-  }else if(rho==0 & gamma==1){
-    (u(t.star,1,lambda,R,t.star)+u(t.star,3,lambda,R,t.star)-2*u(t.star,2,lambda,R,t.star))*p*(1-p)
-  }else if(rho==1 & gamma==1){
-    (u(t.star,3,lambda,R,t.star)+u(t.star,5,lambda,R,t.star)-2*u(t.star,4,lambda,R,t.star))*p*(1-p)
+I.0 <- function(rho, gamma, lambda, R, p, t.star){
+  if(rho == 0 & gamma == 0){
+    u(t.star, 1, lambda, R, t.star) * p * (1 - p)
+  }else if (rho == 1 & gamma == 0){
+    u(t.star, 3, lambda, R, t.star) * p * (1 - p)
+  }else if(rho == 0 & gamma == 1){
+    (u(t.star, 1, lambda, R, t.star) + 
+       u(t.star, 3, lambda, R, t.star) - 
+       2 * u(t.star, 2, lambda, R, t.star)) * p * (1 - p)
+  }else if(rho == 1 & gamma == 1){
+    (u(t.star, 3, lambda, R, t.star) + 
+       u(t.star, 5, lambda, R, t.star) - 
+       2 * u(t.star, 4, lambda, R, t.star)) * p * (1 - p)
   }else{
     stop("improper input of rho or gamma, they must be either 0 or 1. ")
   }
 }
 
 #' @rdname I.0
-I.0.cov<-function(rho1,gamma1,rho2,gamma2,lambda,R,p,t.star){
-  if(rho1+rho2==0 & gamma1+gamma2==0){
-    u(t.star,1,lambda,R,t.star)*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==0){
-    u(t.star,2,lambda,R,t.star)*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==0){
-    u(t.star,3,lambda,R,t.star)*p*(1-p)
-  }else if (rho1+rho2==0 & gamma1+gamma2==1){
-    (u(t.star,1,lambda,R,t.star)-u(t.star,2,lambda,R,t.star))*p*(1-p)
-  }else if (rho1+rho2==0 & gamma1+gamma2==2){
-    (u(t.star,1,lambda,R,t.star)+u(t.star,3,lambda,R,t.star)-2*u(t.star,2,lambda,R,t.star))*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==1){
-    (u(t.star,2,lambda,R,t.star)-u(t.star,3,lambda,R,t.star))*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==1){
-    (u(t.star,3,lambda,R,t.star)-u(t.star,4,lambda,R,t.star))*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==2){
-    (u(t.star,2,lambda,R,t.star)+u(t.star,4,lambda,R,t.star)-2*u(t.star,3,lambda,R,t.star))*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==2){
-    (u(t.star,3,lambda,R,t.star)+u(t.star,5,lambda,R,t.star)-2*u(t.star,4,lambda,R,t.star))*p*(1-p)
+I.0.cov <- function(rho1, gamma1, rho2, gamma2, lambda, R, p, t.star){
+  if(rho1 + rho2 == 0 & gamma1 + gamma2 == 0){
+    u(t.star, 1, lambda, R, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 0){
+    u(t.star, 2, lambda, R, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 0){
+    u(t.star, 3, lambda, R, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 0 & gamma1 + gamma2 == 1){
+    (u(t.star, 1, lambda, R, t.star) - 
+       u(t.star, 2, lambda, R, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 0 & gamma1 + gamma2 == 2){
+    (u(t.star, 1, lambda,R, t.star) + 
+       u(t.star, 3, lambda, R, t.star) - 
+       2 * u(t.star, 2, lambda, R, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 1){
+    (u(t.star, 2, lambda, R, t.star) - 
+       u(t.star, 3, lambda, R, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 1){
+    (u(t.star, 3, lambda, R, t.star) - 
+       u(t.star, 4, lambda, R, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 2){
+    (u(t.star, 2, lambda, R, t.star) + 
+       u(t.star, 4, lambda, R, t.star) - 
+       2 * u(t.star, 3, lambda, R, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 2){
+    (u(t.star, 3, lambda, R, t.star) + 
+       u(t.star, 5, lambda, R, t.star) - 
+       2 * u(t.star, 4, lambda, R, t.star)) * p * (1 - p)
   }else{
     stop("improper input of rho or gamma, they must be either 0 or 1. ")
   }
@@ -150,41 +185,65 @@ I.0.cov<-function(rho1,gamma1,rho2,gamma2,lambda,R,p,t.star){
 #' @references
 #' Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
 #'
-I.1<-function(rho,gamma,lambda,theta,eps,R,p,t.star){
+I.1 <- function(rho, gamma, lambda, theta, eps, R, p, t.star){
 
-  if(rho==0 & gamma==0){
-    h.tilde(0,lambda,theta,eps,R,p,t.star)*p*(1-p)
-  }else if(rho==1 & gamma==0){
-    h.tilde(2,lambda,theta,eps,R,p,t.star)*p*(1-p)
-  }else if(rho==0 & gamma==1){
-    (h.tilde(0,lambda,theta,eps,R,p,t.star)+h.tilde(2,lambda,theta,eps,R,p,t.star)-2*h.tilde(1,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if(rho==1 & gamma==1){
-    (h.tilde(2,lambda,theta,eps,R,p,t.star)+h.tilde(4,lambda,theta,eps,R,p,t.star)-2*h.tilde(3,lambda,theta,eps,R,p,t.star))*p*(1-p)
+  if(rho == 0 & gamma == 0){
+    h.tilde(0, lambda, theta, eps, R, p, t.star) * p * (1 - p)
+  }else if(rho == 1 & gamma == 0){
+    h.tilde(2, lambda, theta, eps, R, p, t.star) * p * (1 - p)
+  }else if(rho == 0 & gamma == 1){
+    (h.tilde(0, lambda, theta, eps, R, p, t.star) + 
+       h.tilde(2, lambda, theta, eps, R, p, t.star) - 
+       2 * h.tilde(1, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if(rho == 1 & gamma == 1){
+    (h.tilde(2, lambda, theta, eps, R, p, t.star) + 
+       h.tilde(4, lambda, theta, eps, R, p, t.star) - 
+       2 * h.tilde(3, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
   }else{
     stop("improper input of rho or gamma, they must be either 0 or 1. ")
   }
 }
 
 #' @rdname I.1
-I.1.cov<-function(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star){
-  if(rho1+rho2==0 & gamma1+gamma2==0){
-    h.tilde(0,lambda,theta,eps,R,p,t.star)*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==0){
-    h.tilde(1,lambda,theta,eps,R,p,t.star)*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==0){
-    h.tilde(2,lambda,theta,eps,R,p,t.star)*p*(1-p)
-  }else if (rho1+rho2==0 & gamma1+gamma2==1){
-    (h.tilde(0,lambda,theta,eps,R,p,t.star)-h.tilde(1,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if (rho1+rho2==0 & gamma1+gamma2==2){
-    (h.tilde(0,lambda,theta,eps,R,p,t.star)+h.tilde(2,lambda,theta,eps,R,p,t.star)-2*h.tilde(1,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==1){
-    (h.tilde(1,lambda,theta,eps,R,p,t.star)-h.tilde(2,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==1){
-    (h.tilde(2,lambda,theta,eps,R,p,t.star)-h.tilde(3,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if (rho1+rho2==1 & gamma1+gamma2==2){
-    (h.tilde(1,lambda,theta,eps,R,p,t.star)+h.tilde(3,lambda,theta,eps,R,p,t.star)-2*h.tilde(2,lambda,theta,eps,R,p,t.star))*p*(1-p)
-  }else if (rho1+rho2==2 & gamma1+gamma2==2){
-    (h.tilde(2,lambda,theta,eps,R,p,t.star)+h.tilde(4,lambda,theta,eps,R,p,t.star)-2*h.tilde(3,lambda,theta,eps,R,p,t.star))*p*(1-p)
+I.1.cov <- function(
+  rho1, 
+  gamma1, 
+  rho2, 
+  gamma2, 
+  lambda, 
+  theta, 
+  eps, 
+  R, 
+  p, 
+  t.star
+  ){
+  if(rho1 + rho2 == 0 & gamma1 + gamma2 == 0){
+    h.tilde(0, lambda, theta, eps, R, p, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 0){
+    h.tilde(1, lambda, theta, eps, R, p, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 0){
+    h.tilde(2, lambda, theta, eps, R, p, t.star) * p * (1 - p)
+  }else if (rho1 + rho2 == 0 & gamma1 + gamma2 == 1){
+    (h.tilde(0, lambda, theta, eps, R, p, t.star) - 
+       h.tilde(1, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 0 & gamma1 + gamma2 == 2){
+    (h.tilde(0, lambda, theta, eps, R, p, t.star) + 
+       h.tilde(2, lambda, theta, eps, R, p, t.star) - 
+       2 * h.tilde(1, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 1){
+    (h.tilde(1, lambda, theta, eps, R, p, t.star) - 
+       h.tilde(2, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 1){
+    (h.tilde(2, lambda, theta, eps, R, p, t.star) - 
+       h.tilde(3, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 1 & gamma1 + gamma2 == 2){
+    (h.tilde(1, lambda, theta, eps, R, p, t.star) + 
+       h.tilde(3, lambda, theta, eps, R, p, t.star) - 
+       2 * h.tilde(2, lambda, theta, eps, R, p, t.star)) * p * (1 - p)
+  }else if (rho1 + rho2 == 2 & gamma1 + gamma2 == 2){
+    (h.tilde(2, lambda, theta, eps, R, p, t.star) + 
+       h.tilde(4, lambda, theta, eps, R, p, t.star) - 
+       2*h.tilde(3 , lambda , theta , eps , R , p , t.star)) * p * (1 - p)
   }else{
     stop("improper input of rho or gamma, they must be either 0 or 1. ")
   }
@@ -202,16 +261,75 @@ I.1.cov<-function(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star){
 #' @references
 #' Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
 #'
-cor.0<-function(rho1,gamma1,rho2,gamma2,lambda,R, p,t.star){
-  I.0.cov(rho1=rho1,gamma1=gamma1,rho2=rho2,gamma2=gamma2,lambda=lambda,R=R, p=p,t.star=t.star)/
-    sqrt(I.0(rho=rho1,gamma=gamma1,lambda=lambda,R=R,p=p,t.star=t.star))/
-    sqrt(I.0(rho=rho2,gamma=gamma2,lambda=lambda,R=R,p=p,t.star=t.star))
+cor.0 <- function(rho1, gamma1, rho2, gamma2, lambda, R, p,t.star){
+  I.0.cov(
+    rho1 = rho1, 
+    gamma1 = gamma1, 
+    rho2 = rho2,
+    gamma2 = gamma2,
+    lambda = lambda,
+    R = R, 
+    p = p,
+    t.star = t.star)/
+    sqrt(
+      I.0(rho = rho1, 
+          gamma = gamma1, 
+          lambda = lambda, 
+          R = R, p = p, 
+          t.star = t.star)
+      )/
+    sqrt(
+      I.0(rho = rho2,
+          gamma = gamma2,
+          lambda = lambda,
+          R = R,
+          p = p,
+          t.star = t.star)
+      )
 }
 #' @rdname cor.0
-cor.1<-function(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star){
-  I.1.cov(rho1=rho1,gamma1=gamma1,rho2=rho2,gamma2=gamma2,lambda=lambda,theta=theta,eps=eps,R=R,p=p,t.star=t.star)/
-    sqrt(I.1(rho=rho1,gamma=gamma1,lambda=lambda,theta=theta,eps=eps,R=R,p=p,t.star=t.star))/
-    sqrt(I.1(rho=rho2,gamma=gamma2,lambda=lambda,theta=theta,eps=eps,R=R,p=p,t.star=t.star))
+cor.1 <- function(
+  rho1,
+  gamma1,
+  rho2,
+  gamma2,
+  lambda,
+  theta,
+  eps,
+  R,
+  p,
+  t.star
+  ){
+  I.1.cov(
+    rho1 = rho1,
+    gamma1 = gamma1,
+    rho2 = rho2,
+    gamma2 = gamma2,
+    lambda = lambda,
+    theta = theta,
+    eps = eps,
+    R = R,
+    p = p,
+    t.star = t.star)/
+    sqrt(
+      I.1(rho = rho1,
+          gamma = gamma1,
+          lambda = lambda,
+          theta = theta,
+          eps = eps,
+          R = R,
+          p = p,
+          t.star = t.star))/
+    sqrt(
+      I.1(rho = rho2,
+          gamma = gamma2,
+          lambda = lambda,
+          theta = theta,
+          eps = eps,
+          R = R,
+          p = p,
+          t.star = t.star)
+      )
 }
 
 
@@ -260,10 +378,10 @@ cor.1<-function(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star){
 #'                                    gamma=accrual.rt, R=R, eta=1e-5, fixEnrollTime = TRUE)$simd
 #'
 #' #Obtain the full information at the final stage based on the generated data
-#' #Trim the data upto the final stage when n_event_FH events have been observed
+#' #Trim the data up to the final stage when n_event_FH events have been observed
 #' data_temp1 <-data.trim.d(n_event_FH,data_temp)[[1]]
 #' I_t(data_temp1,data_temp1,rho,gamma) # the estimated information at the final stage
-#' #Trim the data upto certain event numbers at the interim stage when 60% of the events have been observed. Have been trimed once to get data_temp1, no need to add additional variables, thus set the third argument to be F.
+#' #Trim the data up to certain event numbers at the interim stage when 60% of the events have been observed. Have been trimmed once to get data_temp1, no need to add additional variables, thus set the third argument to be F.
 #' I_t.2(data_temp1,data_temp1,rho,gamma) # If we consider the change of the at-risk set, which is not necessary to be a fixed probability.
 #' data_temp2 <- data.trim.d(ceiling(0.6*n_event_FH),data_temp1,F)[[1]]
 #' I_t(data_temp1,data_temp2,rho,gamma) # Use the full dataset data_temp to provide the survival function, and check the estimated information for the trimmed data set data_temp2 with only 60% of the planned events have been observed.
@@ -274,26 +392,46 @@ cor.1<-function(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star){
 #' @references
 #' Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
 #'
-I_t<-function(data_ref,data_check,rho,gamma){
-  p_hat<-mean(data_ref$trt) #obtain the estimated treatment assignment probability
-  sum_KM_t<-data.table(surv=survKM_minus(v=data_check$survival,survival=data_ref$survival,delta=data_ref$delta),n.event=data_check$delta) #obtain the survival functions for each subjects in data_check
-  {if(rho==0 && gamma==0) p_hat*(1-p_hat)*sum(sum_KM_t$n.event) # For the G^(0,0) class
-    else if(rho==0 && gamma==1) p_hat*(1-p_hat)*sum(sum_KM_t$n.event*(1-sum_KM_t$surv)^2)
-    else if(rho==1 && gamma==0 ) p_hat*(1-p_hat)*sum(sum_KM_t$n.event*(sum_KM_t$surv)^2)
-    else if(rho==1 && gamma==1 ) p_hat*(1-p_hat)*sum(sum_KM_t$n.event*((sum_KM_t$surv)*(1-sum_KM_t$surv))^2)
+I_t <- function(data_ref, data_check, rho, gamma){
+  p_hat <- mean(data_ref$trt) #obtain the estimated treatment assignment probability
+  sum_KM_t <- data.table(
+    surv = survKM_minus(
+      v = data_check$survival, 
+      survival = data_ref$survival,
+      delta = data_ref$delta
+      ),
+    n.event = data_check$delta
+   ) #obtain the survival functions for each subjects in data_check
+  {if(rho == 0 && gamma == 0) 
+    p_hat * (1 - p_hat) * sum(sum_KM_t$n.event) # For the G^(0,0) class
+    else if(rho == 0 && gamma == 1) 
+      p_hat * (1 - p_hat) * sum(sum_KM_t$n.event * (1 - sum_KM_t$surv)^2)
+    else if(rho == 1 && gamma == 0 ) 
+      p_hat * (1 - p_hat) * sum(sum_KM_t$n.event * (sum_KM_t$surv)^2)
+    else if(rho == 1 && gamma == 1 ) 
+      p_hat * (1 - p_hat) * sum(sum_KM_t$n.event * 
+                                  ((sum_KM_t$surv) * (1 - sum_KM_t$surv))^2)
     else stop("Invalid input of rho or gamma: (0,0), (0,1), (1,0), or (1,1)")
   }
 }
 #' @rdname I_t
-I_t.2<-function(data_ref,data_check,rho,gamma){
-LRT.table<-logrank.table(survival=data_check$survival,delta=data_check$delta,trt=data_check$trt)
-surv<-survKM_minus(v=LRT.table$survival,survival=data_ref$survival,delta=data_ref$delta)
-{if(rho==0 && gamma==0) sum(LRT.table$Cov) # For the G^(0,0) class
-  else if(rho==0 && gamma==1)  sum(LRT.table$Cov*(1-surv)^2)
-  else if(rho==1 && gamma==0 ) sum(LRT.table$Cov*(surv)^2)
-  else if(rho==1 && gamma==1 ) sum(LRT.table$Cov*(surv*(1-surv))^2)
-  else stop("Invalid input of rho or gamma: (0,0), (0,1), (1,0), or (1,1)")
-}
+I_t.2 <- function(data_ref, data_check, rho, gamma){
+  LRT.table <- logrank.table(
+    survival = data_check$survival,
+    delta = data_check$delta,
+    trt = data_check$trt
+    )
+  surv <- survKM_minus(
+    v = LRT.table$survival,
+    survival = data_ref$survival,
+    delta = data_ref$delta
+    )
+  {if(rho == 0 && gamma == 0) sum(LRT.table$Cov) # For the G^(0,0) class
+    else if(rho == 0 && gamma == 1)  sum(LRT.table$Cov * (1 - surv)^2)
+    else if(rho == 1 && gamma == 0 ) sum(LRT.table$Cov * (surv)^2)
+    else if(rho == 1 && gamma == 1 ) sum(LRT.table$Cov * (surv * (1 - surv))^2)
+    else stop("Invalid input of rho or gamma: (0,0), (0,1), (1,0), or (1,1)")
+    }
 }
 
 #' Information fraction for Fleming-Harrington weighted log-rank test
@@ -362,10 +500,10 @@ surv<-survKM_minus(v=LRT.table$survival,survival=data_ref$survival,delta=data_re
 #'  final_time<-t_seq[final_index]
 #'  final_frac<-inf_frac_vec2[final_index]
 
-FH.frac.cal<-function(data,t_vec,I_max,rho,gamma,trimmed){
-  t_vec<-as.vector(t_vec) # force t_vec to become a vector
+FH.frac.cal <- function(data, t_vec, I_max, rho, gamma, trimmed){
+  t_vec <- as.vector(t_vec) # force t_vec to become a vector
   sapply(as.vector(unlist(t_vec)), function(tt){
-    dtemp<-data.trim(tt,data,trimmed)
+    dtemp <- data.trim(tt, data, trimmed)
     #p_hat<-mean(dtemp$trt)
     # The problem of the commented codes below is that it is using exact survival S(t) not S(t^-)
     #KM_t<-tryCatch(survfit(Surv(survival,delta)~0,data=dtemp),
@@ -373,7 +511,7 @@ FH.frac.cal<-function(data,t_vec,I_max,rho,gamma,trimmed){
    # sum_KM_t<-summary(KM_t)[c("time","surv","n.event")]
     #I_numer_t<-sum(p_hat*(1-p_hat)*(sum_KM_t$surv^rho*(1-sum_KM_t$surv)^gamma)^2*sum_KM_t$n.event)
     #I_numer_t/I_max
-    I_t(dtemp,dtemp,rho,gamma)/I_max # unlike using survfit and summary(survfit object), which should use the survival function one row above because of the Fleming-Harrington weights are predictable.
+    I_t(dtemp, dtemp, rho,gamma) / I_max # unlike using survfit and summary(survfit object), which should use the survival function one row above because of the Fleming-Harrington weights are predictable.
   })
 }
 
@@ -441,25 +579,47 @@ FH.frac.cal<-function(data,t_vec,I_max,rho,gamma,trimmed){
 #' WLR.test.cov(survival=data_interim$survival,delta=data_interim$delta,trt=data_interim$trt,w2=w2_2)
 #' WLR.test.cor(survival=data_interim$survival,delta=data_interim$delta,trt=data_interim$trt,w2=w2_2)
 #'
-#'
-#'
-
-WLR.test.cov<-function(survival, delta, trt,w1=function(v,...){1},w2=function(v,...){1}){
-  WLR_table<-logrank.table(survival,delta,trt)
-  wt_vec1<-w1(v=WLR_table$survival,survival=WLR_table$survival,delta=WLR_table$delta)
-  wt_vec2<-w2(v=WLR_table$survival,survival=WLR_table$survival,delta=WLR_table$delta)
-  sum(wt_vec1*wt_vec2*WLR_table$Cov)
-
+WLR.test.cov <- function(
+  survival, 
+  delta, 
+  trt,
+  w1 = function(v,...){1},
+  w2 = function(v,...){1}){
+  WLR_table <- logrank.table(survival, delta, trt)
+  wt_vec1 <- w1(
+    v = WLR_table$survival, 
+    survival = WLR_table$survival,
+    delta = WLR_table$delta
+    )
+  wt_vec2 <- w2(
+    v = WLR_table$survival, 
+    survival = WLR_table$survival,
+    delta = WLR_table$delta
+    )
+  sum(wt_vec1 * wt_vec2 * WLR_table$Cov)
 }
 #' @rdname WLR.test.cov
-WLR.test.cor<-function(survival, delta, trt,w1=function(v,...){1},w2=function(v,...){1}){
-  WLR_table<-logrank.table(survival,delta,trt)
-  wt_vec1<-w1(v=WLR_table$survival,survival=WLR_table$survival,delta=WLR_table$delta)
-  wt_vec2<-w2(v=WLR_table$survival,survival=WLR_table$survival,delta=WLR_table$delta)
-  cov<-sum(wt_vec1*wt_vec2*WLR_table$Cov)
-  v1<-sum(wt_vec1^2*WLR_table$Cov)
-  v2<-sum(wt_vec2^2*WLR_table$Cov)
-  (cor_val<-cov/sqrt(v1*v2))
+WLR.test.cor <- function(
+  survival, 
+  delta, 
+  trt,w1 = function(v,...){1}, 
+  w2 = function(v,...){1}
+  ){
+  WLR_table <- logrank.table(survival, delta, trt)
+  wt_vec1 <- w1(
+    v = WLR_table$survival,
+    survival = WLR_table$survival,
+    delta = WLR_table$delta
+    )
+  wt_vec2 <- w2(
+    v = WLR_table$survival,
+    survival = WLR_table$survival,
+    delta = WLR_table$delta
+    )
+  cov <- sum(wt_vec1 * wt_vec2 * WLR_table$Cov)
+  v1 <- sum(wt_vec1^2 * WLR_table$Cov)
+  v2 <- sum(wt_vec2^2 * WLR_table$Cov)
+  (cor_val <- cov / sqrt(v1 * v2))
 }
 
 
@@ -518,17 +678,24 @@ WLR.test.cor<-function(survival, delta, trt,w1=function(v,...){1},w2=function(v,
 #'   I.1.cov(rho1,gamma1,rho2,gamma2,lambda,theta,eps,R,p,t.star=10)
 
 
-approx.I<-function(t.star,p,S1=function(x){1},S0=function(x){1},func=function(x){1},n.length=1e6){
-  out=0
-  x_seq<-seq(0,t.star,length.out=n.length)
-  df<-function(x){
-    p*S1(x)+(1-p)*S0(x)
+approx.I <- function(
+  t.star,
+  p,
+  S1 = function(x){1},
+  S0 = function(x){1},
+  func = function(x){1},
+  n.length = 1e6
+  ){
+  out = 0
+  x_seq <- seq(0, t.star, length.out = n.length)
+  df <- function(x){
+    p * S1(x) + (1 - p) * S0(x)
   }
   for(i in 2:n.length){
-    x=x_seq[i]
-    out=out-func(x)*(df(x_seq[i])-df(x_seq[i-1]))
+    x = x_seq[i]
+    out = out - func(x) * (df(x_seq[i]) - df(x_seq[i - 1]))
   }
-  out*p*(1-p)
+  out * p * (1 - p)
 }
 
 

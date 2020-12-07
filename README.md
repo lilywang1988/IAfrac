@@ -1,61 +1,64 @@
 Fleming-Harrington class weighted log-rank tests and interim analysis
 ================
 [Lili Wang](mailto:lilywang@umich.edu)
-2019-08-23
+2020-12-06
 
-Purpose
--------
+## Purpose
 
-This R package is to implement important contributions from Dr. Hasegawa (2014 and 2016) to calculate sample sizes and information fractions (IF) for Fleming-Harrington class weighted log-rank tests (FH-WLRT) in interim analysis (IA).
+This R package is to implement important contributions from Dr. Hasegawa
+(2014 and 2016) to calculate sample sizes and information fractions (IF)
+for Fleming-Harrington class weighted log-rank tests (FH-WLRT) in
+interim analysis (IA).
 
-This R package will be improved gradually and we hope to release it to CRAN eventually when it is well established. Please let us know if you find anything to be corrected. We highly appreciate your feedback.
+This R package will be improved gradually and we hope to release it to
+CRAN eventually when it is well established. Please let us know if you
+find anything to be corrected. We highly appreciate your feedback.
 
-Model assumptions
------------------
+## Model assumptions
 
-Let the survival function is *S*<sub>0</sub>(*t*) for both treatment arms (treatment and control) under the null, but *S*<sub>1</sub>(*t*) for the treatment in comparison with *S*<sub>0</sub>(*t*) for the control arm under the alternative.
+Let the survival function is \(S_0(t)\) for both treatment arms
+(treatment and control) under the null, but \(S_1(t)\) for the treatment
+in comparison with \(S_0(t)\) for the control arm under the alternative.
 
-We consider a simple case in current version of the R package, with a delayed (*ϵ*) treatment effect and can be described with a piece-wise exponential distribution is proposed.
+We consider a simple case in current version of the R package, with a
+delayed (\(\epsilon\)) treatment effect and can be described with a
+piece-wise exponential distribution is proposed.
 
-$$\\begin{array}{cc}
- S\_0(t)= \\exp(-\\lambda t),   
+\[\begin{array}{cc}
+ S_0(t)= \exp(-\lambda t),   
 & 
-S\_1(t)=\\left\\{\\begin{array}{c l}
-exp(-\\lambda t) &for \\ t\\leq \\epsilon;\\\\
-c \\exp(-\\theta\\lambda t)& for \\ t&gt; \\epsilon. 
-\\end{array}  \\right.
-\\end{array}$$
+S_1(t)=\left\{\begin{array}{c l}
+exp(-\lambda t) &for \ t\leq \epsilon;\\
+c \exp(-\theta\lambda t)& for \ t> \epsilon. 
+\end{array}  \right.
+\end{array}\]
 
-Note that
-*c* = exp(−(1 − *θ*)*λ* × *ϵ*)
+Note that \[c=\exp(-(1-\theta)\lambda\times\epsilon)\]
 
 The corresponding density functions are
 
-$$\\begin{array}{cc}
- f\_0(t)= \\lambda\\exp(-\\lambda t),   
+\[\begin{array}{cc}
+ f_0(t)= \lambda\exp(-\lambda t),   
 & 
-f\_1(t)=\\left\\{\\begin{array}{c l}
-\\lambda\\exp(-\\lambda t)=\\lambda S\_1(t) &for \\ t\\leq \\epsilon;\\\\
-\\theta\\lambda c\\exp(-\\theta\\lambda t)=\\theta\\lambda S\_1(t)& for \\ t&gt; \\epsilon.
-\\end{array}  \\right.
-\\end{array}$$
+f_1(t)=\left\{\begin{array}{c l}
+\lambda\exp(-\lambda t)=\lambda S_1(t) &for \ t\leq \epsilon;\\
+\theta\lambda c\exp(-\theta\lambda t)=\theta\lambda S_1(t)& for \ t> \epsilon.
+\end{array}  \right.
+\end{array}\]
 
-Install the package
--------------------
+## Install the package
 
-To install the R package from Github, you will need to install another R package "devtools". Please uncomment the codes to install them.
+To install the R package from Github, you will need to install another R
+package “devtools”. Please uncomment the codes to install them.
 
 ``` r
 # install.packages("devtools")
 # library(devtools)
 # install_github("lilywang1988/IAfrac")
 library(IAfrac)
-#> Loading required package: data.table
-#> Loading required package: survival
 ```
 
-Vignette 1: sample size caulcation for FH-WLRT
-----------------------------------------------
+## Vignette 1: sample size caulcation for FH-WLRT
 
 ``` r
 # Sample size calculation using an Example 1 from Hasegawa (2014)
@@ -78,8 +81,7 @@ Vignette 1: sample size caulcation for FH-WLRT
  #1974, identical to the paper's report
 ```
 
-Vignette 2: data manipulation and information fraction
-------------------------------------------------------
+## Vignette 2: data manipulation and information fraction
 
 ``` r
 
@@ -87,15 +89,13 @@ Vignette 2: data manipulation and information fraction
 # library(devtools)
 # install_github("keaven/nphsim")
 library(nphsim)
+#> Loading required package: survival
 #> Loading required package: survMisc
 #> Loading required package: mvtnorm
 #> Loading required package: Matrix
 #> Loading required package: dplyr
 #> 
 #> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:data.table':
-#> 
-#>     between, first, last
 #> The following objects are masked from 'package:stats':
 #> 
 #>     filter, lag
@@ -112,8 +112,8 @@ library(nphsim)
 #> Loading required package: ggpubr
 #> Loading required package: magrittr
 #> Loading required package: survRM2
-#> Warning: replacing previous import 'ggplot2::autoplot' by
-#> 'survMisc::autoplot' when loading 'nphsim'
+#> Warning: replacing previous import 'ggplot2::autoplot' by 'survMisc::autoplot'
+#> when loading 'nphsim'
 set.seed(123456)
 eps<-2 # delayed effect
 p<-0.5 #treatment assignment
@@ -195,8 +195,7 @@ data_temp3<-data_temp3.ls[[1]]
 #> [1] 8.800698
 ```
 
-Vignette 3: information prediction and estimation
--------------------------------------------------
+## Vignette 3: information prediction and estimation
 
 ``` r
 # install.packages("devtools")
@@ -263,15 +262,27 @@ I.0(rho,gamma,lambda,R,p,pred_t0)*n_FH # predicted information, should be close 
 #> [1] 22.75341
 ```
 
-References
-----------
+## References
 
-1.  Kalbfleisch, J. D., & Prentice, R. L. (2011). The statistical analysis of failure time data (Vol. 360). John Wiley & Sons.
+1.  Lakatos, E. (1988). Sample sizes based on the log-rank statistic in
+    complex clinical trials. Biometrics, 229-241.
 
-2.  Hasegawa, T. (2014). Sample size determination for the weighted log‐rank test with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 13(2), 128-135.
+2.  Kalbfleisch, J. D., & Prentice, R. L. (2011). The statistical
+    analysis of failure time data (Vol. 360). John Wiley & Sons.
 
-3.  Hasegawa, T. (2016). Group sequential monitoring based on the weighted log‐rank test statistic with the Fleming–Harrington class of weights in cancer vaccine studies. Pharmaceutical statistics, 15(5), 412-419.
+3.  Hasegawa, T. (2014). Sample size determination for the weighted
+    log‐rank test with the Fleming–Harrington class of weights in
+    cancer vaccine studies. Pharmaceutical statistics, 13(2), 128-135.
 
-4.  Ye, T., & Yu, M. (2018). A robust approach to sample size calculation in cancer immunotherapy trials with delayed treatment effect. Biometrics, 74(4), 1292-1300.
+4.  Hasegawa, T. (2016). Group sequential monitoring based on the
+    weighted log‐rank test statistic with the Fleming–Harrington class
+    of weights in cancer vaccine studies. Pharmaceutical statistics,
+    15(5), 412-419.
 
-5.  Luo, X., Mao, X., Chen, X., Qiu, J., Bai, S., & Quan, H. (2019). Design and monitoring of survival trials in complex scenarios. Statistics in medicine, 38(2), 192-209.
+5.  Ye, T., & Yu, M. (2018). A robust approach to sample size
+    calculation in cancer immunotherapy trials with delayed treatment
+    effect. Biometrics, 74(4), 1292-1300.
+
+6.  Luo, X., Mao, X., Chen, X., Qiu, J., Bai, S., & Quan, H. (2019).
+    Design and monitoring of survival trials in complex scenarios.
+    Statistics in medicine, 38(2), 192-209.

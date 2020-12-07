@@ -3,7 +3,6 @@
 \docType{package}
 \name{IAfrac}
 \alias{IAfrac}
-\alias{IAfrac-package}
 \title{IAfrac: A package for interim analysis using weighted log-rank tests}
 \description{
 The IAfrac package implements Hasegawa (2014) and (2016) proposals for weighted log-rank tests in piece-wise expornential distributed survival functions. The current version only considers two pieces with only one change point (epsilon). This R package provides four categories of important functions:

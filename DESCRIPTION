@@ -1,13 +1,16 @@
 Package: IAfrac
 Type: Package
 Title: Tools for weighted log-rank tests
-Version: 0.1.0
-Date: 2019-08-12
+Version: 0.1.1
+Date: 2020-12-06
 Author: Lili Wang, Xiaodong Luo, Cheng Zheng
 Maintainer: Lili Wang <lilywang@umich.edu>
 Description: Sample size calculation and information fraction estimation for weighted log-rank tests.
 License: GPL-2
 Encoding: UTF-8
-RoxygenNote: 6.1.1
-Depends: data.table, survival
-Suggests: gsDesign, nphsim
+Suggests: nphsim
+Imports:
+    mvtnorm,
+    gsDesign
+Depends: R (>= 3.5.2)
+RoxygenNote: 7.1.0
