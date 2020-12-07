@@ -5,11 +5,21 @@
 \alias{WLR.test.cor}
 \title{Estimate the covariance and correlation between two arbitrary weights}
 \usage{
-WLR.test.cov(survival, delta, trt, w1 = function(v, ...) {     1 },
-  w2 = function(v, ...) {     1 })
+WLR.test.cov(
+  survival,
+  delta,
+  trt,
+  w1 = function(v, ...) {     1 },
+  w2 = function(v, ...) {     1 }
+)
 
-WLR.test.cor(survival, delta, trt, w1 = function(v, ...) {     1 },
-  w2 = function(v, ...) {     1 })
+WLR.test.cor(
+  survival,
+  delta,
+  trt,
+  w1 = function(v, ...) {     1 },
+  w2 = function(v, ...) {     1 }
+)
 }
 \arguments{
 \item{survival}{The time to event or censoring, not that, it's the follow-up time after entoring, you may also consider as the total at-risk time.}
@@ -78,8 +88,6 @@ WLR.test.cor(survival=data_interim$survival,delta=data_interim$delta,trt=data_in
 w2_2<-function(v,...){1-exp(-v*0.25)}
 WLR.test.cov(survival=data_interim$survival,delta=data_interim$delta,trt=data_interim$trt,w2=w2_2)
 WLR.test.cor(survival=data_interim$survival,delta=data_interim$delta,trt=data_interim$trt,w2=w2_2)
-
-
 
 }
 \references{

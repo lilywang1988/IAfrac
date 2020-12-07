@@ -4,7 +4,9 @@
 \alias{WLR.test}
 \title{Weighted log-rank tests with any input weight}
 \usage{
-WLR.test(survival, delta, trt, w = function(v, ...) {     1 })
+WLR.test(survival, delta, trt, w = function(v, ...) {
+    1
+})
 }
 \arguments{
 \item{survival}{Time to event or censoring.}

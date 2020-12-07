@@ -15,26 +15,32 @@
 #' In addition, the output also include \code{O1} as the observed events from the treatment arm, \code{E1} as the expected events from the treatment arm, \code{Cov} as the estimated variance without considering the weights.
 #' @author Lili Wang
 #'
-FH.table<-function(survival,delta,trt,rho,gamma){
-  ord<-order(survival)
-  survival<-survival[ord]
-  delta<-delta[ord]
-  trt<-trt[ord]
-  n<-length(delta)
-  if(n!=length(survival)) stop("Unequal lengths of survival and delta")
+FH.table <- function(survival, delta, trt, rho, gamma){
+  ord <- order(survival)
+  survival <- survival[ord]
+  delta <- delta[ord]
+  trt <- trt[ord]
+  n <- length(delta)
+  if(n != length(survival)) stop("Unequal lengths of survival and delta")
   #delete the last delta=1 observation to avoid the situation of S=0
-  if(delta[n]==1) {
-    survival=survival[-n]
-    delta=delta[-n]
-    trt=trt[-n]
-    n=n-1
+  if(delta[n] == 1) {
+    survival = survival[ - n]
+    delta = delta[ - n]
+    trt = trt[ - n]
+    n = n - 1
   }
   # Note the Surv is prepared for the weight, which is predictable, corresponding to survKM_minus.
-  out<-data.table(survival=survival,Surv=c(1,cumprod(1-delta/(n:1))[-n]),Surv.exact=cumprod(1-delta/(n:1)),delta=delta,trt=trt)
-  Y<-n:1
-  P1<-rev(cumsum(rev(trt)))/Y
-  P0<-1-P1
-  out[,weight:=Surv^rho*(1-Surv)^gamma][,O1:=trt*delta][,E1:=P1*delta][,Cov:=P1*P0*delta]
+  out <- data.table(
+    survival = survival,
+    Surv = c(1, cumprod(1 - delta / (n:1))[ - n]),
+    Surv.exact = cumprod(1 - delta / (n:1)), 
+    delta = delta, 
+    trt = trt
+    )
+  Y <- n:1
+  P1 <- rev(cumsum(rev(trt))) / Y
+  P0 <- 1 - P1
+  out[, weight := Surv^rho * (1 - Surv)^gamma][,O1 := trt*delta][,E1 := P1 * delta][,Cov := P1 * P0 * delta]
   return(out)
 }
 
@@ -55,28 +61,28 @@ FH.table<-function(survival,delta,trt,rho,gamma){
 #' @author Lili Wang
 #'
 #'
-logrank.table<-function(survival,delta,trt){
-  ord<-order(survival)
-  survival<-survival[ord]
-  delta<-delta[ord]
-  trt<-trt[ord]
-  n<-length(delta)
-  if(n!=length(survival)) stop("Unequal lengths of survival and delta")
+logrank.table <- function(survival, delta, trt){
+  ord <- order(survival)
+  survival <- survival[ord]
+  delta <- delta[ord]
+  trt <- trt[ord]
+  n <- length(delta)
+  if(n != length(survival)) stop("Unequal lengths of survival and delta")
 
   #delete the last delta=1 observation to avoid the situation of S=0
-  if(delta[n]==1) {
-    survival=survival[-n]
-    delta=delta[-n]
-    trt=trt[-n]
-    n=n-1
+  if(delta[n] == 1) {
+    survival = survival[ - n]
+    delta = delta[ - n]
+    trt = trt[ - n]
+    n = n - 1
   }
-  Y<-n:1
-  P1<-rev(cumsum(rev(trt)))/Y
-  P0<-1-P1
-  O1<-trt*delta
-  E1<-P1*delta
-  Cov<-P1*P0*delta
-  out=data.table(O1,E1,Cov,P1,P0,Y,survival,delta,trt)
+  Y <- n:1
+  P1 <- rev(cumsum(rev(trt))) / Y
+  P0 <- 1 - P1
+  O1 <- trt * delta
+  E1 <- P1 * delta
+  Cov <- P1 * P0 * delta
+  out = data.table(O1, E1, Cov, P1, P0, Y, survival, delta, trt)
   return(out)
 }
 
@@ -91,36 +97,45 @@ logrank.table<-function(survival,delta,trt){
 #' @return \code{survKM_minus} returns the predictable one \eqn{S(t^-)}, and \code{survKM_exact} returns \eqn{S(t)}.
 #'
 #' @author Lili Wang
-survKM_minus<-function(v,survival, delta){
-  v=as.vector(v)
-  ord<-order(survival)
-  survival<-survival[ord]
-  delta<-delta[ord]
-  n=length(delta)
-  if(delta[n]==1) {
-    survival=survival[-n]
-    delta=delta[-n]
-    n=n-1
+survKM_minus <- function(v, survival, delta){
+  v = as.vector(v)
+  ord <- order(survival)
+  survival <- survival[ord]
+  delta <- delta[ord]
+  n = length(delta)
+  if(delta[n] == 1) {
+    survival = survival[ - n]
+    delta = delta[ - n]
+    n = n - 1
   }
-  if(is.unsorted(survival)) {ord=order(survival);survival=survival[ord];delta=delta[ord];}
-  if(n!=length(survival)) stop("Unequal lengths of survival and delta")
-  c(1,cumprod(1-delta/(n:1)))[sapply(v,function(tt)which.min(survival<tt))] # corresponding to t^-, that is to make it predictable
+  if(is.unsorted(survival)) {
+    ord = order(survival)
+    survival = survival[ord]
+    delta = delta[ord]
+    }
+  if(n != length(survival)) stop("Unequal lengths of survival and delta")
+  c(1, cumprod(1 - delta / (n:1)))[
+    sapply(v, function(tt) which.min(survival < tt))
+    ] # corresponding to t^-, that is to make it predictable
 }
 #' @rdname survKM_minus
-survKM_exact<-function(v,survival, delta){
-  v=as.vector(v)
-  ord<-order(survival)
-  survival<-survival[ord]
-  delta<-delta[ord]
-  n=length(delta)
-  if(delta[n]==1) {
-    survival=survival[-n]
-    delta=delta[-n]
-    n=n-1
+survKM_exact <- function(v, survival, delta){
+  v <- as.vector(v)
+  ord <- order(survival)
+  survival <- survival[ord]
+  delta <- delta[ord]
+  n <- length(delta)
+  if(delta[n] == 1) {
+    survival = survival[ - n]
+    delta = delta[ - n]
+    n = n - 1
   }
-  if(is.unsorted(survival)) {ord=order(survival);survival=survival[ord];delta=delta[ord];}
-  if(n!=length(survival)) stop("Unequal lengths of survival and delta")
-  cumprod(1-delta/(n:1))[sapply(v,function(tt)which.min(survival<tt))]
+  if(is.unsorted(survival)) {
+    ord = order(survival)
+    survival = survival[ord]
+    delta = delta[ord];}
+  if(n != length(survival)) stop("Unequal lengths of survival and delta")
+  cumprod(1 - delta / (n:1))[sapply(v, function(tt) which.min(survival < tt))]
 }
 
 #'
@@ -155,13 +170,13 @@ survKM_exact<-function(v,survival, delta){
 #' FH.test(survival=data_final$survival,delta=data_final$delta,trt=data_final$trt,rho=rho,gamma=gamma)
 #' WLR.test(survival=data_final$survival,delta=data_final$delta,trt=data_final$trt,w=function(...){survKM_minus(...)^rho*(1-survKM_minus(...))^gamma})
 #'
-FH.test<-function(survival, delta, trt, rho, gamma){
-  FH_table<-FH.table(survival,delta,trt,rho,gamma)
-  O1<-sum(FH_table$weight*FH_table$O1)
-  E1<-sum(FH_table$weight*FH_table$E1)
-  V<-sum(FH_table$weight^2*FH_table$Cov)
-  Z<-(O1-E1)/sqrt(V)
-  return(list(O1=O1,E1=E1,Z=Z))
+FH.test <- function(survival, delta, trt, rho, gamma){
+  FH_table <- FH.table(survival, delta, trt, rho, gamma)
+  O1 <- sum(FH_table$weight * FH_table$O1)
+  E1 <- sum(FH_table$weight * FH_table$E1)
+  V <- sum(FH_table$weight^2 * FH_table$Cov)
+  Z<-(O1 - E1) / sqrt(V)
+  return(list(O1 = O1,E1 = E1,Z = Z))
 }
 
 #' Weighted log-rank tests with any input weight
@@ -186,12 +201,16 @@ FH.test<-function(survival, delta, trt, rho, gamma){
 #' FH.test(survival=data_final$survival,delta=data_final$delta,trt=data_final$trt,rho=rho,gamma=gamma)
 #' WLR.test(survival=data_final$survival,delta=data_final$delta,trt=data_final$trt,w=function(...){survKM_minus(...)^rho*(1-survKM_minus(...))^gamma})
 #'
-WLR.test<-function(survival, delta, trt,w=function(v,...){1}){
-  WLR_table<-logrank.table(survival,delta,trt)
-  wt_vec<-w(v=WLR_table$survival,survival=WLR_table$survival,delta=WLR_table$delta)
-  O1<-sum(wt_vec*WLR_table$O1)
-  E1<-sum(wt_vec*WLR_table$E1)
-  V<-sum(wt_vec^2*WLR_table$Cov)
-  Z<-(O1-E1)/sqrt(V)
-  return(list(O1=O1,E1=E1,Z=Z))
+WLR.test <- function(survival, delta, trt, w = function(v,...){1}){
+  WLR_table <- logrank.table(survival, delta, trt)
+  wt_vec <- w(
+    v = WLR_table$survival, 
+    survival = WLR_table$survival, 
+    delta = WLR_table$delta
+    )
+  O1 <- sum(wt_vec * WLR_table$O1)
+  E1 <- sum(wt_vec * WLR_table$E1)
+  V <- sum(wt_vec^2 * WLR_table$Cov)
+  Z <- (O1 - E1) / sqrt(V)
+  return(list(O1 = O1, E1 = E1, Z = Z))
 }

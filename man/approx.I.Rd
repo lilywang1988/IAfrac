@@ -4,8 +4,14 @@
 \alias{approx.I}
 \title{Approximate information for an arbitrary survival function}
 \usage{
-approx.I(t.star, p, S1 = function(x) {     1 }, S0 = function(x) {    
-  1 }, func = function(x) {     1 }, n.length = 1e+06)
+approx.I(
+  t.star,
+  p,
+  S1 = function(x) {     1 },
+  S0 = function(x) {     1 },
+  func = function(x) {     1 },
+  n.length = 1e+06
+)
 }
 \arguments{
 \item{t.star}{The ending time of the cumulative informaiton or covariance prediciton.}

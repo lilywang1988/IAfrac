@@ -18,28 +18,29 @@
 #' @examples
 #'
 #'
-data.trim<-function(t, data,trimmed=F){
+data.trim <- function(t, data, trimmed = F){
   data.ord<- data[order(ct)]
-  if(trimmed==F) data.ord[,delta:=1-cnsr][,trt:=ifelse(treatment=="experimental",1,0)]
-  data.ord.t<- data.ord[enterT<=t] # only select the at-risk subjects
-  data.ord.t[,delta:=ifelse(ct>t,0,delta)][,ct:=pmin(ct,t)][,survival:=ct-enterT]
+  if(trimmed == F) 
+    data.ord[, delta := 1-cnsr][, trt := ifelse(treatment == "experimental", 1, 0)]
+  data.ord.t <- data.ord[enterT <= t] # only select the at-risk subjects
+  data.ord.t[, delta := ifelse(ct > t, 0, delta)][,ct := pmin(ct, t)][,survival := ct - enterT]
   #print(paste0("t_time: ", interim_time, " and t: ", t))
   return(copy(data.ord.t))
 }
 
 # trim the data when there are enough deaths
 #' @rdname data.trim
-data.trim.d<-function(d, data,trimmed=F){
-  data.ord<- data[order(ct)]
-  if(trimmed==F) data.ord[,delta:=1-cnsr][,trt:=ifelse(treatment=="experimental",1,0)]
+data.trim.d <- function(d, data, trimmed=F){
+  data.ord <- data[order(ct)]
+  if(trimmed == F) data.ord[, delta := 1 - cnsr][, trt := ifelse(treatment == "experimental", 1, 0)]
 
-  row <- which.max(cumsum(data.ord$delta)==d)
-  t<- as.numeric(data.ord[row,'ct'])
+  row <- which.max(cumsum(data.ord$delta) == d)
+  t<- as.numeric(data.ord[row, 'ct'])
 
-  data.ord.t<- data.ord[enterT<=t] # only select the at-risk subjects
-  data.ord.t[,delta:=ifelse(ct>t,0,delta)][,ct:=pmin(ct,t)][,survival:=ct-enterT]
+  data.ord.t <- data.ord[enterT <= t] # only select the at-risk subjects
+  data.ord.t[, delta := ifelse(ct > t, 0, delta)][,ct := pmin(ct, t)][, survival := ct - enterT]
   #print(paste0("t_time: ", interim_time, " and t: ", t))
-  return(list(copy(data.ord.t),t))
+  return(list(copy(data.ord.t), t))
 }
 
 
