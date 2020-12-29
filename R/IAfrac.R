@@ -30,6 +30,7 @@
 #' @export h0
 #' @export I.0
 #' @export I.0.cov 
+#' @export cor.1 
 #' @export I.1 
 #' @export I.1.cov
 #' @export cor.0
