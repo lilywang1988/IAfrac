@@ -41,7 +41,7 @@ sample.size_FH <- function(
   S_1 <- f_S_1(t)
   S_2 <- f_S_2(t)
   S <- (1 - p) * S_1 + p * S_2
-  D <- (h_1 * N_1 + h_2 * N_2) / b
+  D <- (h_1 * N_1 + h_2 * N_2) / b * min(tau / R, 1) 
   theta_seq <- h_2 / h_1
   phi <- N_2 / N_1
   r <- S^rho * (1 - S)^gamma
