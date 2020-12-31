@@ -2,7 +2,7 @@ Package: IAfrac
 Type: Package
 Title: Tools for weighted log-rank tests
 Version: 0.1.1
-Date: 2020-12-06
+Date: 2020-12-30
 Author: Lili Wang, Xiaodong Luo, Cheng Zheng
 Maintainer: Lili Wang <lilywang@umich.edu>
 Description: Sample size calculation and information fraction estimation for weighted log-rank tests.
