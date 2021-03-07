@@ -1,25 +1,4 @@
-######## Fleming and Harrington #########
-######## Ref. paper T. Hasegawa 2016 pharmaceutical statistics ##########
-##### Information fraction calculation #####
-
 #library(data.table) #imports >= 1.12.2
-### The below setting is prepared for direct debugging on the R file.
-if(F){
-  tau <- 18 # end of the study
-  R <- 14  # end  of the uniform enrollment period
-  lambda <- log(2) / 6 # event hazard for the control arm
-  k <- 2 # how many stages including the final stage
-  eps <- 2 # the change point
-  #eps <- seq(0,20,0.1)
-  theta <- 0.7 #the hazard ratio after the change point (before the change point HR should be 1)
-  p <- 0.5 #the treatment assignment probability
-  k1 <- 1 # parameter for basic functions
-  k2 <- 2 # parameter for basic functions
-  rho <- 0 # FH parameter 1
-  gamma <- 1 # FH paramete 2
-}
-
-
 #' Basic functions
 #'
 #' Some basic functions for information prediction.
